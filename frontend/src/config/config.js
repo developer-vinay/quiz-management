@@ -9,7 +9,7 @@ const getApiUrl = () => {
 
   // Default URLs based on environment
   return isDevelopment
-    ? 'http://localhost:5000'
+    ? 'http://localhost:5002'
     : 'https://web-quiz-backend-h5y5.onrender.com';
 };
 

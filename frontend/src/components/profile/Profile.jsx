@@ -23,14 +23,20 @@ import {
   Chip,
   useTheme,
   useMediaQuery,
-  Stack
+  Stack,
+  Avatar
 } from '@mui/material';
 import {
   Edit as EditIcon,
   Save as SaveIcon,
   Cancel as CancelIcon,
   Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  VisibilityOff as VisibilityOffIcon,
+  Person as PersonIcon,
+  AccountCircle as AccountIcon,
+  Settings as SettingsIcon,
+  School as SchoolIcon,
+  Assignment as AssignmentIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../config/axios';
@@ -214,72 +220,104 @@ const Profile = () => {
   };
 
   return (
-    <Container 
-      maxWidth="md" 
-      sx={{ 
-        mt: { xs: 2, sm: 3, md: 4 }, 
-        mb: { xs: 2, sm: 3, md: 4 },
-        px: { xs: 1, sm: 2, md: 3 }
-      }}
-    >
-      <Paper sx={{ 
-        p: { xs: 2, sm: 3 },
-        borderRadius: { xs: 1, sm: 2 }
-      }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between', 
-          alignItems: { xs: 'stretch', sm: 'center' }, 
-          mb: { xs: 2, sm: 3 },
-          gap: { xs: 1, sm: 0 }
-        }}>
-          <Typography 
-            variant={isMobile ? "h5" : "h4"}
-            sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
-          >
-            Profile Settings
-          </Typography>
-          <Box sx={{ 
-            display: 'flex', 
-            gap: 1, 
-            alignItems: 'center',
-            justifyContent: { xs: 'space-between', sm: 'flex-end' }
-          }}>
-            <Chip
-              label={user?.role?.toUpperCase()}
-              color="primary"
-              variant="outlined"
-              size={isMobile ? "small" : "small"}
-              sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
-            />
+    <Box sx={{ 
+      minHeight: '100vh',
+      bgcolor: 'background.default',
+      pt: { xs: 10, sm: 11, md: 12 }, // Space for navbar
+      pb: 4
+    }}>
+      <Container maxWidth="lg">
+        {/* Profile Header with Avatar */}
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 4,
+            mb: 3,
+            borderRadius: 3,
+            background: `linear-gradient(135deg, ${theme.palette.primary.main}15 0%, ${theme.palette.secondary.main}15 100%)`,
+            border: `1px solid ${theme.palette.divider}`
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
+            <Avatar
+              sx={{
+                width: { xs: 80, sm: 100 },
+                height: { xs: 80, sm: 100 },
+                bgcolor: 'primary.main',
+                fontSize: { xs: '2rem', sm: '2.5rem' },
+                fontWeight: 'bold',
+                boxShadow: 4
+              }}
+            >
+              {user?.name?.charAt(0)?.toUpperCase()}
+            </Avatar>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="h4" sx={{ mb: 0.5, fontWeight: 600 }}>
+                {user?.name}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+                {user?.email}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Chip
+                  icon={<PersonIcon />}
+                  label={user?.role?.toUpperCase()}
+                  color="primary"
+                  size="small"
+                  sx={{ fontWeight: 600 }}
+                />
+                {user?.department && (
+                  <Chip
+                    label={user.department}
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+              </Box>
+            </Box>
             {canEditProfile() && (
               <Tooltip title={editMode ? "Cancel Edit" : "Edit Profile"}>
                 <IconButton
                   onClick={handleEditToggle}
-                  className={editMode ? "delete-icon" : "edit-icon"}
-                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    bgcolor: editMode ? 'error.light' : 'primary.light',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: editMode ? 'error.main' : 'primary.main',
+                    }
+                  }}
                 >
                   {editMode ? <CancelIcon /> : <EditIcon />}
                 </IconButton>
               </Tooltip>
             )}
           </Box>
-        </Box>
+        </Paper>
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+        <Grid container spacing={3}>
+          {/* Left Column - Profile Information */}
+          <Grid item xs={12} md={8}>
+            <Paper sx={{ 
+              p: 3,
+              borderRadius: 3,
+              height: '100%'
+            }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                mb: 3
+              }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AccountIcon color="primary" />
+                  Profile Information
+                </Typography>
+              </Box>
 
-        {/* Profile Information Section */}
-        <Typography 
-          variant={isMobile ? "h6" : "h5"} 
-          gutterBottom
-          sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
-        >
-          Profile Information
-        </Typography>
+              {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+              {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-        <Box component="form" onSubmit={handleProfileUpdate} sx={{ mb: 4 }}>
+              <Box component="form" onSubmit={handleProfileUpdate}>
           <Grid container spacing={isMobile ? 2 : 3}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -389,121 +427,86 @@ const Profile = () => {
             )}
           </Grid>
         </Box>
+      </Paper>
+    </Grid>
 
-        <Divider sx={{ my: { xs: 3, sm: 4 } }} />
+        {/* Right Column - Security & Info */}
+        <Grid item xs={12} md={4}>
+          <Stack spacing={3}>
+            {/* Security Card */}
+            <Paper sx={{ p: 3, borderRadius: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <SettingsIcon color="primary" />
+                Security
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Keep your account secure by using a strong password
+              </Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => setPasswordDialogOpen(true)}
+                startIcon={<EditIcon />}
+                sx={{ mb: 1 }}
+              >
+                Change Password
+              </Button>
+            </Paper>
 
-        {/* Password Change Section */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between', 
-          alignItems: { xs: 'stretch', sm: 'center' }, 
-          mb: { xs: 2, sm: 3 },
-          gap: { xs: 1, sm: 0 }
-        }}>
-          <Typography 
-            variant={isMobile ? "h6" : "h5"}
-            sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
-          >
-            Security Settings
-          </Typography>
-          <Button
-            variant="outlined"
-            onClick={() => setPasswordDialogOpen(true)}
-            startIcon={<EditIcon />}
-            className="settings-icon"
-            fullWidth={isMobile}
-            sx={{ 
-              fontSize: { xs: '0.875rem', sm: '1rem' },
-              py: { xs: 1, sm: 1.5 }
-            }}
-          >
-            Change Password
-          </Button>
-        </Box>
+            {/* Academic/Faculty Info Card */}
+            {user?.role === 'student' && (
+              <Paper sx={{ p: 3, borderRadius: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <SchoolIcon color="primary" />
+                  Academic Details
+                </Typography>
+                <Stack spacing={2}>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">Department</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{user.department}</Typography>
+                  </Box>
+                  <Divider />
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">Year & Section</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      Year {user.year} - Section {user.section}
+                    </Typography>
+                  </Box>
+                  <Divider />
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">Admission Number</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{user.admissionNumber}</Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            )}
 
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
-          sx={{ 
-            mb: 3,
-            fontSize: { xs: '0.75rem', sm: '0.875rem' }
-          }}
-        >
-          {user?.role === 'student' || user?.role === 'event'
-            ? 'As a student/event user, you can only update your password. Contact admin for other changes.'
-            : 'You can change your password anytime for security purposes.'
-          }
-        </Typography>
-
-        {/* Academic Information for Students */}
-        {user?.role === 'student' && (
-          <>
-            <Divider sx={{ my: 4 }} />
-            <Typography variant="h5" gutterBottom>
-              Academic Information
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              This information is read-only. Contact admin if changes are needed.
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Department"
-                  value={user.department || ''}
-                  disabled
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Year"
-                  value={user.year || ''}
-                  disabled
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Section"
-                  value={user.section || ''}
-                  disabled
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Admission Number"
-                  value={user.admissionNumber || ''}
-                  disabled
-                />
-              </Grid>
-            </Grid>
-          </>
-        )}
-
-        {/* Faculty Information */}
-        {user?.role === 'faculty' && !editMode && (
-          <>
-            <Divider sx={{ my: 4 }} />
-            <Typography variant="h5" gutterBottom>
-              Faculty Information
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Assigned Departments:
+            {user?.role === 'faculty' && !editMode && (
+              <Paper sx={{ p: 3, borderRadius: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AssignmentIcon color="primary" />
+                  Assigned Departments
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                   {user.departments?.map((dept) => (
-                    <Chip key={dept} label={dept} variant="outlined" />
+                    <Chip key={dept} label={dept} color="primary" variant="outlined" />
                   ))}
                 </Box>
-              </Grid>
-            </Grid>
-          </>
-        )}
+              </Paper>
+            )}
+
+            {/* Info Card */}
+            <Paper sx={{ p: 3, borderRadius: 3, bgcolor: 'action.hover' }}>
+              <Typography variant="body2" color="text.secondary">
+                {user?.role === 'student' || user?.role === 'event'
+                  ? '📌 Contact your administrator to update academic information'
+                  : '📌 You have full access to manage your profile settings'
+                }
+              </Typography>
+            </Paper>
+          </Stack>
+        </Grid>
+      </Grid>
 
         {/* Password Change Dialog */}
         <Dialog
@@ -616,8 +619,8 @@ const Profile = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Paper>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

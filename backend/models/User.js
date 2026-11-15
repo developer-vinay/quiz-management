@@ -262,7 +262,7 @@ UserSchema.pre('save', function(next) {
     });
 
     if (!validAssignments) {
-      next(new Error('Faculty assignments must match their allowed departments, years, semesters, and sections'));
+      return next(new Error('Faculty assignments must match their allowed departments, years, semesters, and sections'));
     }
   }
   next();

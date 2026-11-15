@@ -80,16 +80,13 @@ const FALLBACK_PORTS = [5001, 5002, 5003];
 
 const startServer = async (port) => {
   try {
-    // Direct Atlas URL connection
-    // const ATLAS_URL = 'mongodb+srv://vinaybuttala:vinay@cluster0.ljtzrex.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-    const ATLAS_URL = 'mongodb+srv://vinaybuttala:vinay123@cluster0.za6yh4j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-    
-    //// console.log('Connecting to MongoDB Atlas...');
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      console.error('❌ MONGODB_URI is not set');
+      process.exit(1);
+    }
 
-    await mongoose.connect(ATLAS_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    await mongoose.connect(mongoUri);
 
     console.log('✅ MongoDB Atlas connected successfully');
 
